@@ -1,13 +1,13 @@
-package io.github.darlene.surveyplatform;
+package io.github.darlene.surveyplatformbackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SurveyPlatformApplication {
+public class SurveyPlatformBackendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SurveyPlatformApplication.class, args);
+		SpringApplication.run(SurveyPlatformBackendApplication.class, args);
 	}
 
 }
