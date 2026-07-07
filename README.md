@@ -39,28 +39,10 @@ discover, complete, and submit surveys with PDF certificate uploads.
 ```
 
 ## Architecture at a Glance
+![Sky Survey Platform ERD](docs/System Architecture.png)
+## Entity Relationship Diagram
 
-The entire platform hangs on one principle: **the `questions` table is the single
-source of truth.**
-
-- The Angular form renders controls dynamically from question metadata
-- The Spring service validates every submission against the same metadata
-  (required, email format, choice membership, file rules)
-- Response XML is serialized dynamically (`@JsonAnyGetter`), keyed by question name
-- The admin responses table generates its columns from the metadata
-
-Adding a question through the UI flows end-to-end with **zero code changes**.
-
-Other key decisions (see `docs/` for the full design):
-
-- **Anti-corruption layer**: exactly one file per side knows the XML wire format
-  (`XmlParserService` in Angular, `XmlMapper` in Spring)
-- **Constrained EAV data model** with a denormalized, functionally-indexed
-  `responses.email_address` for the hottest admin query
-- **Certificates as lazy-loaded BLOBs** behind a service seam (swappable for S3)
-- **Defense in depth**: client validation for UX, metadata-driven server validation
-  for correctness, DB constraints (`CHECK`, `UNIQUE`, FKs) for integrity
-- PDF uploads verified by **magic bytes**, filenames sanitized against path traversal
+![Sky Survey Platform ERD](docs/ERD Diagram.png)
 
 ## Getting Started
 
