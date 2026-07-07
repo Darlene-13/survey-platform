@@ -43,7 +43,6 @@ discover, complete, and submit surveys with PDF certificate uploads.
 ## Entity Relationship Diagram
 
 ![Sky Survey Platform ERD](docs/ERD_Diagram.png)
-
 ## Getting Started
 
 ### Prerequisites
