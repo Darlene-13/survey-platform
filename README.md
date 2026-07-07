@@ -39,10 +39,10 @@ discover, complete, and submit surveys with PDF certificate uploads.
 ```
 
 ## Architecture at a Glance
-![Sky Survey Platform ERD](docs/System Architecture.png)
+![Sky Survey Platform ERD](docs/System_Architecture.png)
 ## Entity Relationship Diagram
 
-![Sky Survey Platform ERD](docs/ERD Diagram.png)
+![Sky Survey Platform ERD](docs/ERD_Diagram.png)
 
 ## Getting Started
 
