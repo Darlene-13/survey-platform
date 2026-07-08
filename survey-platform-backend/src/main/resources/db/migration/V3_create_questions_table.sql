@@ -13,6 +13,7 @@ CREATE TABLE questions (
                            description    TEXT,
                            allow_multiple BOOLEAN      NOT NULL DEFAULT FALSE,
                            sort_order     INT          NOT NULL DEFAULT 0,
+                           updated_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
                            CONSTRAINT uq_question_name_per_survey UNIQUE (survey_id, name)
 );
 
