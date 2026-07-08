@@ -18,5 +18,5 @@ public class OptionsXml {
 
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "option")
-    private List<Optional>
+    private List<OptionalXml> option = new ArrayList<>();
 }
