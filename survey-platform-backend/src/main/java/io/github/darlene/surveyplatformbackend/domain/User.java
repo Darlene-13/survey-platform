@@ -33,5 +33,8 @@ public class User{
     @Column(name="creation_at")
     private LocalDateTime createdAt;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional=false)
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }
