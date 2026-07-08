@@ -12,7 +12,7 @@ const MESSAGES: Record<number, string> = {
 };
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  const snackBar = inject(MatSnackBar);
+  const snackBar = inject(MatSnackBar); // error pop
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
