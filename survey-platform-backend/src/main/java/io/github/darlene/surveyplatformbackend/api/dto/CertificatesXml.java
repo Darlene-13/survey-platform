@@ -1,14 +1,11 @@
 package io.github.darlene.surveyplatformbackend.api.dto;
-
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import java.util.List;
 
-@JacksonXmlRootElement(localName = "questions")
-public record QuestionsXml(
+public record CertificatesXml(
         @JacksonXmlElementWrapper(useWrapping = false)
-        @JacksonXmlProperty(localName = "question")
-        List<QuestionXml> questions
+        @JacksonXmlProperty(localName = "certificate")
+        List<CertificateXml> certificates
 ) {}
