@@ -1,4 +1,4 @@
-package io.github.darlene.surveyplatformbackend.exception;
+package io.github.darlene.surveyplatformbackend.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {
