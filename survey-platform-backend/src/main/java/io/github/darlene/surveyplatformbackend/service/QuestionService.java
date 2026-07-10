@@ -1,6 +1,5 @@
 package io.github.darlene.surveyplatformbackend.service;
 
-
 import io.github.darlene.surveyplatformbackend.domain.Question;
 import io.github.darlene.surveyplatformbackend.domain.QuestionType;
 import io.github.darlene.surveyplatformbackend.domain.Survey;
@@ -44,14 +43,47 @@ public class QuestionService{
 
     }
 
+    // Method to update data
+    public Question update(Long surveyId, Long questionId, Question incoming){
+        // Find the existing question
+        Question existing = questionRepository.findByIdAndSurveyId(questionId, surveyId)
+                .orElseThrow(() -> new NotFoundException("Question", questionId));
+
+        if (!existing.getName().equals(incoming.getName())
+            && questionRepository.existsBySurveyIdAndName(surveyId, incoming.getName())){
+            throw new ValidationException("A question named " + incoming.getName() + " already exists in the survey");
+        }
+
+
+        validateShape(incoming);
+
+        existing.setName(incoming.getName());
+        existing.setType(incoming.getType());
+        existing.setRequired(incoming.isRequired());
+        existing.setText(incoming.getText());
+        existing.setDescription(incoming.getDescription());
+        existing.setAllowMultiple(incoming.isAllowMultiple());
+        //existing.setSortOrder(incoming.getSortOrder());
+        existing.replaceOptions(incoming.getOptions());
+
+        if (incoming.getFileProperties() != null){
+            incoming.getFileProperties().setQuestion(existing);
+        }
+
+        existing.setFileProperties(incoming.getFileProperties());
+
+        return existing;
+    }
+
+
+
     @Transactional
-    public void delete(Long surveyId, Long questionId){
+    public void delete(Long surveyId, Long questionId) {
         Question question = questionRepository.findByIdAndSurveyId(questionId, surveyId)
                 .orElseThrow(() -> new NotFoundException("Question", questionId));
         questionRepository.delete(question);
 
     }
-
 
     // Private method for shape validation
     private void validateShape(Question question){
