@@ -4,6 +4,8 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
+import java.util.List;
+
 @JacksonXmlRootElement(localName = "question_responses")
 public record QuestionResponsesXml(
         @JacksonXmlProperty(isAttribute = true, localName = "current_page") int currentPage,

@@ -1,4 +1,4 @@
-package io.github.darlene.surveyplatformbackend.dto;
+package io.github.darlene.surveyplatformbackend.api.dto;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Getter;
