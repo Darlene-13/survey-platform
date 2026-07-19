@@ -20,11 +20,13 @@ public class QuestionService{
     private final QuestionRepository questionRepository;
     private final SurveyService surveyService;
 
+    // Find question by survey
     public List<Question> findBySurvey(Long surveyId){
         surveyService.getById(surveyId);    // 404 for unknown survey and not an empty
         return questionRepository.findBySurveyIdOrderBySortOrderAscIdAsc(surveyId);
     }
 
+    // Create questions
     @Transactional
     public Question create(Long surveyId, Question question){
         Survey survey = surveyService.getById(surveyId);
@@ -40,10 +42,9 @@ public class QuestionService{
             question.setSortOrder(survey.getQuestions().size());
             wireChildren(question);
             return questionRepository.save(question);
-
     }
 
-    // Method to update data
+    // Method to update the question
     public Question update(Long surveyId, Long questionId, Question incoming){
         // Find the existing question
         Question existing = questionRepository.findByIdAndSurveyId(questionId, surveyId)
