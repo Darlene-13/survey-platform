@@ -6,6 +6,7 @@ import { catchError, throwError } from 'rxjs';
 const MESSAGES: Record<number, string> = {
   0: 'Cannot reach the server. Check your connection.',
   400: 'The request was invalid. Please review your input.',
+  401: 'You are not authorized to perform that Transaction',
   404: 'The requested resource was not found.',
   413: 'File too large. Check the upload size limit.',
   500: 'Something went wrong on the server. Try again later.',

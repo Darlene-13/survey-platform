@@ -1,136 +1,91 @@
 # Survey Platform
 
-A dynamic survey platform where administrators create and manage surveys through the
-application, no code changes required to add new surveys or questions,  and users
-discover, complete, and submit surveys with PDF certificate uploads.
+Survey Platform is a metadata-driven survey application. The repository currently
+contains an Angular UI scaffold and a Spring Boot backend scaffold, together with
+the database migrations and design diagrams used to shape the model.
 
-## Tech Stack
+## Repository layout
 
-| Layer     | Technology                                             |
-|-----------|--------------------------------------------------------|
-| Frontend  | Angular 17+ (standalone components, signals), Angular Material, Tailwind CSS |
-| Backend   | Java 21, Spring Boot 3.3 (Web, Data JPA, Validation), Jackson XML |
-| Database  | PostgreSQL  `sky_survey_db`                            |
-| API format| XML over HTTPS, `multipart/form-data` for submissions  |
-
-## Repository Structure
-
-```
+```text
 .
-├── backend/                  # Spring Boot REST API
-│   ├── src/main/java/com/sky/survey/
-│   │   ├── domain/           # JPA entities (metadata-driven model)
-│   │   ├── repository/       # Spring Data repositories
-│   │   ├── service/          # Business logic + metadata-driven validation
-│   │   ├── api/              # Controllers, XML DTOs, mapper, error handling
-│   │   └── exception/        # Domain exceptions
-│   └── src/main/resources/application.yml
-├── frontend/                 # Angular SPA
-│   └── src/app/
-│       ├── core/             # Models, XML parser, HTTP services, interceptors
-│       ├── shared/           # Reusable components and pipes
-│       ├── layout/           # Admin shell (sidenav, toolbar)
-│       └── features/         # surveys | questions | take-survey | responses
-├── db/
-│   └── sky_survey_db.sql     # Schema + seed data (source of truth)
+├── survey-platform-backend/       # Spring Boot application
+│   ├── src/main/java/io/github/darlene/surveyplatformbackend/
+│   │   ├── authentication/        # Users, roles, auth DTOs and auth boundaries
+│   │   ├── survey/                # Survey feature
+│   │   ├── question/              # Question, option and file-rule feature
+│   │   ├── response/              # Responses and submitted answers
+│   │   ├── certificate/           # Uploaded certificate model and boundaries
+│   │   ├── shared/                # XML mapper and shared exceptions
+│   │   └── configuration/         # Application-wide configuration
+│   └── src/main/resources/db/migration/  # Flyway schema migrations
+├── survey-platform-ui/            # Angular application
+│   └── src/app/core/               # Models, services and HTTP interceptors
 └── docs/
-    ├── erd.png               # Entity Relationship Diagram
-    └── postman_collection.json
+    ├── erd.png                    # Entity relationship diagram
+    └── System_Architecture.png    # System architecture diagram
 ```
 
-## Architecture at a Glance
-![Sky Survey Platform ERD](docs/System_Architecture.png)
-## Entity Relationship Diagram
+The backend is organized by feature rather than by a single global `domain`,
+`service`, `repository`, and `dto` tree. Feature folders may contain empty
+controller/service/configuration placeholders while implementation is still in
+progress; no behavior is implied by those placeholders.
 
-![Sky Survey Platform ERD](docs/erd.png)
-## Getting Started
+## Technology stack
 
-### Prerequisites
+| Area | Technology |
+| --- | --- |
+| Backend | Java 25, Spring Boot 4.1.0, Spring Web MVC, Spring Data JPA, Spring Security |
+| Persistence | PostgreSQL, Flyway migrations |
+| Serialization | Jackson XML |
+| Frontend | Angular 22, Angular Material, Tailwind CSS |
+| Build tools | Maven Wrapper, npm |
 
-- Java 21+, Maven 3.9+
-- Node.js 20+, Angular CLI 17+
-- PostgreSQL 15+
+## Database
 
-### 1. Database
+Flyway migrations are located in
+`survey-platform-backend/src/main/resources/db/migration`. They currently define
+users, surveys, questions/options, file properties, responses/answers,
+certificates, and timestamp triggers. Configure a PostgreSQL datasource through
+the normal Spring datasource properties before starting the application.
+
+## Running locally
+
+### Backend
 
 ```bash
-createdb sky_survey_db
-psql -d sky_survey_db -f db/sky_survey_db.sql
+cd survey-platform-backend
+./mvnw compile
+./mvnw spring-boot:run
 ```
 
-The script creates the schema and seeds the example survey from the specification.
-The API runs with `ddl-auto: validate` — the SQL script owns the schema.
+The backend currently has no checked-in datasource values in
+`src/main/resources/application.properties`, so a PostgreSQL connection must be
+provided through environment variables or Spring configuration.
 
-### 2. Backend
-
-```bash
-cd backend
-DB_USER=postgres DB_PASSWORD=postgres mvn spring-boot:run
-```
-
-The API starts on `http://localhost:8080`. Verify:
+### Frontend
 
 ```bash
-curl -H "Accept: application/xml" http://localhost:8080/api/surveys
-```
-
-### 3. Frontend
-
-```bash
-cd frontend
+cd survey-platform-ui
 npm install
-ng serve
+npm start
 ```
 
-Open `http://localhost:4200`. Requests to `/api` are proxied to the backend
-(`proxy.conf.json`).
+The Angular development server is configured by the UI project files and serves
+the application locally on its usual Angular development port.
 
-## Application Pages
+## Current status
 
-| Route                      | Audience      | Purpose                                        |
-|----------------------------|---------------|------------------------------------------------|
-| `/surveys`                 | Administrator | Create, edit, delete, and view surveys         |
-| `/surveys/:id/questions`   | Administrator | Manage questions and choice options            |
-| `/surveys/:id/responses`   | Administrator | Paginated responses, email filter, downloads   |
-| `/take`                    | Participant   | Browse available surveys                       |
-| `/take/:id`                | Participant   | Stepped survey form with review and submission |
+- Backend source has been reorganized into feature packages.
+- JPA entities, repositories, XML DTOs, Flyway migrations, and the shared XML
+  mapper are present.
+- Authentication, feature services, controllers, and complete API wiring are
+  still being built out.
+- `./mvnw compile` succeeds.
+- The context test requires a configured PostgreSQL datasource and therefore
+  cannot run in an environment without database settings.
 
-## API Summary
+## Design references
 
-All endpoints produce `application/xml`.
+![System architecture](docs/System_Architecture.png)
 
-| Method | Endpoint                              | Description                                  |
-|--------|---------------------------------------|----------------------------------------------|
-| GET    | `/api/surveys`                        | List surveys                                 |
-| POST   | `/api/surveys`                        | Create survey                                |
-| PUT    | `/api/surveys/{id}`                   | Update survey                                |
-| DELETE | `/api/surveys/{id}`                   | Delete survey (cascades)                     |
-| GET    | `/api/surveys/{id}/questions`         | List questions with options/file rules       |
-| POST   | `/api/surveys/{id}/questions`         | Create question                              |
-| PUT    | `/api/surveys/{id}/questions/{qid}`   | Update question (options replaced atomically)|
-| DELETE | `/api/surveys/{id}/questions/{qid}`   | Delete question                              |
-| POST   | `/api/surveys/{id}/responses`         | Submit response (`multipart/form-data`)      |
-| GET    | `/api/surveys/{id}/responses`         | Paginated responses — `?page=1&pageSize=10&email=` |
-| GET    | `/api/certificates/{id}`              | Download an uploaded certificate             |
-
-Errors return XML with appropriate status codes:
-`400` validation, `404` not found, `413` file too large, `500` unexpected.
-
-## Question Types Supported
-
-`short_text` · `long_text` · `email` · `choice` (single or multiple) · `file` (PDF upload
-with per-question format, size, and multiplicity rules)
-
-## Testing
-
-Import `docs/postman_collection.json` into Postman. The collection covers every
-endpoint with sample requests and saved responses, including error cases
-(missing required field, unknown survey, oversized file).
-
-## Roadmap / Production Notes
-
-- JWT authentication separating admin and participant endpoints (two trust zones
-  already exist in the route design)
-- Object storage (S3) for certificates via the existing `FileStorageService` seam
-- Soft-delete for surveys if audit requirements emerge
-- CI pipeline: build + test both apps, lint, container images
+![Entity relationship diagram](docs/erd.png)
