@@ -45,6 +45,11 @@ public class GlobalExceptionHandler {
         return error(HttpStatus.NOT_FOUND, exception.getMessage(), request);
     }
 
+    @ExceptionHandler({ValidationException.class, InvalidFileException.class, IllegalArgumentException.class})
+    ResponseEntity<ErrorResponseXml> invalidRequest(RuntimeException exception, HttpServletRequest request) {
+        return error(HttpStatus.BAD_REQUEST, exception.getMessage(), request);
+    }
+
     private ResponseEntity<ErrorResponseXml> error(HttpStatus status, String message, HttpServletRequest request) {
         return ResponseEntity.status(status).body(new ErrorResponseXml(status.value(), message, request.getRequestURI(), Instant.now().toString()));
     }

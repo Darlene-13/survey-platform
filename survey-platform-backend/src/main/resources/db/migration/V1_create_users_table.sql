@@ -11,8 +11,7 @@ CREATE TABLE users (
                     CONSTRAINT chk_role
                    CHECK(role IN('ADMIN', 'RESPONDENT')),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-)
+);
 
 CREATE UNIQUE INDEX idx_users_email_lower ON users(LOWER(email));
-CREATE INDEX idx_users_role ON users(role)
-
+CREATE INDEX idx_users_role ON users(role);

@@ -68,7 +68,8 @@
               "buildTarget": "survey-platform-ui:build:production"
             },
             "development": {
-              "buildTarget": "survey-platform-ui:build:development"
+              "buildTarget": "survey-platform-ui:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

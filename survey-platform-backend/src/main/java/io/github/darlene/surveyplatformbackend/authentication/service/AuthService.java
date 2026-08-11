@@ -78,6 +78,7 @@ public class AuthService{
         return loginResponse(user, accessToken, refreshToken);
     }
 
+    @Transactional
     public LoginResponseXml refreshToken(String token){
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
                 .orElseThrow(() -> new InvalidTokenException("Refresh Token Expired!"));
@@ -117,7 +118,7 @@ public class AuthService{
                 .token(accessToken)
                 .user(userXml)
                 .type("Bearer")
-                .expiresIn(LocalDateTime.now().plusHours(24))
+                .expiresIn(LocalDateTime.now().plusHours(24).toString())
                 .email(user.getEmail())
                 .role(user.getRole())
                 .refreshToken(refreshToken.getToken())

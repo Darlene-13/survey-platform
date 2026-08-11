@@ -16,4 +16,6 @@ public class SurveyXml {
     private String name;
 
     private String description;
+
+    private String status;
 }

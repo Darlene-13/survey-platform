@@ -25,6 +25,9 @@ public class QuestionXml {
     @JacksonXmlProperty(isAttribute = true)
     private String required;                   // "yes" / "no"
 
+    @JacksonXmlProperty(isAttribute = true, localName = "sort_order")
+    private Integer sortOrder;
+
     private String text;
 
     private String description;

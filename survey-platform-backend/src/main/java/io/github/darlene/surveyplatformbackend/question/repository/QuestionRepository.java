@@ -14,4 +14,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     Optional<Question> findByIdAndSurveyId(Long id, Long surveyId);
 
     boolean existsBySurveyIdAndName(Long surveyId, String name);
+
+    boolean existsBySurveyIdAndNameAndIdNot(Long surveyId, String name, Long id);
 }

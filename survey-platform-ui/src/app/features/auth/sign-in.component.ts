@@ -31,13 +31,19 @@ export class SignInComponent {
           this.message = `This account is not a ${this.expectedRole.toLowerCase()} account.`;
           return;
         }
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-        void this.router.navigateByUrl(returnUrl ?? (this.expectedRole === 'ADMIN' ? '/admin/dashboard' : '/'));
+        void this.router.navigateByUrl(this.destinationAfterLogin());
       },
       error: () => {
         this.submitting = false;
         this.message = 'Sign in failed. Check your email and password.';
       }
     });
+  }
+
+  private destinationAfterLogin(): string {
+    if (this.expectedRole === 'ADMIN') {
+      return this.returnUrl?.startsWith('/admin/') ? this.returnUrl : '/admin/dashboard';
+    }
+    return this.returnUrl?.startsWith('/interviews/') ? this.returnUrl : '/';
   }
 }

@@ -4,6 +4,7 @@ import io.github.darlene.surveyplatformbackend.shared.exception.ResourceNotFound
 import io.github.darlene.surveyplatformbackend.survey.dto.SurveyXml;
 import io.github.darlene.surveyplatformbackend.survey.dto.SurveysXml;
 import io.github.darlene.surveyplatformbackend.survey.model.Survey;
+import io.github.darlene.surveyplatformbackend.survey.model.SurveyStatus;
 import io.github.darlene.surveyplatformbackend.survey.repository.SurveyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,18 @@ public class SurveyService {
     @Transactional
     public void delete(Long surveyId) { surveyRepository.delete(requireSurvey(surveyId)); }
 
+    @Transactional
+    public SurveyXml changeStatus(Long surveyId, SurveyStatus status) {
+        Survey survey = requireSurvey(surveyId);
+        if (status == SurveyStatus.LIVE && survey.getQuestions().isEmpty()) {
+            throw new io.github.darlene.surveyplatformbackend.shared.exception.ValidationException(
+                    "Add at least one question before publishing this interview"
+            );
+        }
+        survey.setStatus(status);
+        return toXml(surveyRepository.save(survey));
+    }
+
     private Survey requireSurvey(Long id) {
         return surveyRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Interview not found: " + id));
     }
@@ -53,6 +66,7 @@ public class SurveyService {
         xml.setId(survey.getId());
         xml.setName(survey.getName());
         xml.setDescription(survey.getDescription());
+        xml.setStatus(survey.getStatus().name());
         return xml;
     }
 }

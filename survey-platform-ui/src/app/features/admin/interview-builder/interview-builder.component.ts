@@ -1,7 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
 import { Question, QuestionType } from '../../../core/models/question.model';
 import { Survey } from '../../../core/models/survey.model';
 import { QuestionService } from '../../../core/services/question.service';
@@ -23,6 +22,7 @@ export class InterviewBuilderComponent implements OnInit {
   protected readonly questions = signal<Question[]>([]);
   protected readonly saving = signal(false);
   protected readonly message = signal('');
+  protected readonly linkCopied = signal(false);
   protected name = '';
   protected description = '';
   protected questionText = '';
@@ -38,12 +38,16 @@ export class InterviewBuilderComponent implements OnInit {
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('surveyId'));
     if (!id) return;
-    forkJoin({ interview: this.surveys.get(id), questions: this.questionService.list(id) }).subscribe({
-      next: ({ interview, questions }) => {
-        this.interview.set(interview); this.questions.set(questions);
+    this.surveys.get(id).subscribe({
+      next: interview => {
+        this.interview.set(interview);
         this.name = interview.name; this.description = interview.description;
       },
       error: () => this.message.set('The interview could not be loaded.')
+    });
+    this.questionService.list(id).subscribe({
+      next: questions => this.questions.set(questions),
+      error: () => this.message.set('The interview opened, but its questions could not be loaded.')
     });
   }
 
@@ -106,6 +110,23 @@ export class InterviewBuilderComponent implements OnInit {
   protected close(): void {
     if (!this.interview()?.id) return;
     this.surveys.close(Number(this.interview()!.id)).subscribe({ next: interview => this.interview.set(interview) });
+  }
+
+  protected respondentLink(): string {
+    const interviewId = this.interview()?.id;
+    return interviewId ? `${window.location.origin}/interviews/${interviewId}` : '';
+  }
+
+  protected async copyRespondentLink(): Promise<void> {
+    const link = this.respondentLink();
+    if (!link) return;
+    try {
+      await navigator.clipboard.writeText(link);
+      this.linkCopied.set(true);
+      window.setTimeout(() => this.linkCopied.set(false), 2200);
+    } catch {
+      this.message.set('The link could not be copied. Select it and copy it manually.');
+    }
   }
 
   private resetQuestion(): void {

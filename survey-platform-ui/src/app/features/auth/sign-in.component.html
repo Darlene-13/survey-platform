@@ -1,13 +1,38 @@
 <main class="auth-page">
-  <form class="auth-card" (ngSubmit)="submit()">
-    <a routerLink="/" class="brand">Respondly</a>
-    <p class="eyebrow">{{ expectedRole === 'ADMIN' ? 'Administration' : 'Interview portal' }}</p>
-    <h1>{{ expectedRole === 'ADMIN' ? 'Admin sign in' : 'Respondent sign in' }}</h1>
-    <label>Email<input name="email" type="email" autocomplete="email" [(ngModel)]="email" required></label>
-    <label>Password<input name="password" type="password" autocomplete="current-password" [(ngModel)]="password" required minlength="8"></label>
-    @if (message) { <p class="error" role="alert">{{ message }}</p> }
-    <button type="submit" [disabled]="submitting">{{ submitting ? 'Signing in…' : 'Sign in' }}</button>
-    @if (expectedRole === 'RESPONDENT') { <a [routerLink]="['/register/respondent']" [queryParams]="{ returnUrl: returnUrl }">Create respondent account</a> }
-    <a routerLink="/">Return home</a>
-  </form>
+  <section class="story-panel">
+    <a routerLink="/" class="brand"><span>R</span>Respondly</a>
+    <div class="story-copy">
+      <p>{{ expectedRole === 'ADMIN' ? 'Interview workspace' : 'Candidate portal' }}</p>
+      <h1>{{ expectedRole === 'ADMIN' ? 'Thoughtful hiring starts with a better question.' : 'Your experience deserves more than a CV.' }}</h1>
+      <span>{{ expectedRole === 'ADMIN' ? 'Create consistent interview forms, gather complete candidate responses, and review every detail in one calm place.' : 'Take your time, share how you think, and securely provide the documents requested by the hiring team.' }}</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">✓</div>
+      <div><strong>{{ expectedRole === 'ADMIN' ? 'Structured and simple' : 'Private by design' }}</strong><small>{{ expectedRole === 'ADMIN' ? 'Every candidate gets a fair, consistent experience.' : 'Your answers only go to the team running the interview.' }}</small></div>
+    </div>
+  </section>
+
+  <section class="form-panel">
+    <form class="auth-card" (ngSubmit)="submit()">
+      <p class="eyebrow">{{ expectedRole === 'ADMIN' ? 'Administration' : 'Welcome back' }}</p>
+      <h2>{{ expectedRole === 'ADMIN' ? 'Sign in to your workspace' : 'Continue your interview' }}</h2>
+      <p class="intro">Enter the email and password connected to your Respondly account.</p>
+
+      <label>Email address
+        <div class="field"><span>@</span><input name="email" type="email" autocomplete="email" [(ngModel)]="email" placeholder="you@example.com" required></div>
+      </label>
+      <label>Password
+        <div class="field"><span>●</span><input name="password" type="password" autocomplete="current-password" [(ngModel)]="password" placeholder="Enter your password" required minlength="8"></div>
+      </label>
+      @if (message) { <p class="error" role="alert">{{ message }}</p> }
+      <button type="submit" [disabled]="submitting"><span>{{ submitting ? 'Signing in...' : 'Sign in securely' }}</span></button>
+
+      @if (expectedRole === 'RESPONDENT') {
+        <div class="switch"><span>New to Respondly?</span><a [routerLink]="['/register/respondent']" [queryParams]="{ returnUrl: returnUrl }">Create an account</a></div>
+      } @else {
+        <div class="switch"><span>Here for an interview?</span><a routerLink="/signin/respondent">Respondent sign in</a></div>
+      }
+      <a class="home-link" routerLink="/">Return to Respondly home</a>
+    </form>
+  </section>
 </main>

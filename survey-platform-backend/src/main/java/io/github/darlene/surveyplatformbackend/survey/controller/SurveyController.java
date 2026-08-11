@@ -2,6 +2,8 @@ package io.github.darlene.surveyplatformbackend.survey.controller;
 
 import io.github.darlene.surveyplatformbackend.survey.dto.SurveyXml;
 import io.github.darlene.surveyplatformbackend.survey.dto.SurveysXml;
+import io.github.darlene.surveyplatformbackend.survey.dto.SurveyStatusXml;
+import io.github.darlene.surveyplatformbackend.survey.model.SurveyStatus;
 import io.github.darlene.surveyplatformbackend.survey.service.SurveyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,4 +25,10 @@ public class SurveyController {
     public SurveyXml update(@PathVariable Long surveyId, @RequestBody SurveyXml request) { return surveyService.update(surveyId, request); }
     @DeleteMapping("/{surveyId}") @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long surveyId) { surveyService.delete(surveyId); }
+    @PatchMapping(value = "/{surveyId}/status", consumes = APPLICATION_XML_VALUE)
+    public SurveyXml changeStatus(@PathVariable Long surveyId, @RequestBody SurveyStatusXml request) {
+        return surveyService.changeStatus(surveyId, SurveyStatus.valueOf(request.getStatus().trim().toUpperCase()));
+    }
+    @PostMapping("/{surveyId}/publish") public SurveyXml publish(@PathVariable Long surveyId) { return surveyService.changeStatus(surveyId, SurveyStatus.LIVE); }
+    @PostMapping("/{surveyId}/close") public SurveyXml close(@PathVariable Long surveyId) { return surveyService.changeStatus(surveyId, SurveyStatus.CLOSED); }
 }

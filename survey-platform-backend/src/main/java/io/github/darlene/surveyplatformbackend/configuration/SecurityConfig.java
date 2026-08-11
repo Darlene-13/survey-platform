@@ -37,6 +37,7 @@ public class SecurityConfig{
                         .requestMatchers("/api/v1/auth/**", "/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/surveys/*/questions").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/surveys", "/api/v1/surveys/*").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/surveys/*/responses").hasAuthority("RESPONDENT")
                         .requestMatchers("/api/v1/surveys/*/responses/**", "/api/v1/certificates/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/v1/surveys/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated())

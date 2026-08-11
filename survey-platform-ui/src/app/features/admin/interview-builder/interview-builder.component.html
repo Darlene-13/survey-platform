@@ -36,6 +36,13 @@
           @if (interview()?.status !== 'LIVE') { <button (click)="publish()" [disabled]="!questions().length || saving()">Publish interview</button> }
           @else { <a [routerLink]="['/interviews', interview()?.id]">Open interview</a><button class="close-interview" (click)="close()">Close interview</button> }
         </article>
+        @if (interview()) {
+          <article class="share-card">
+            <div class="share-heading"><div><small>Respondent link</small><h2>Share this interview</h2></div><span [class.live]="interview()?.status === 'LIVE'">{{ interview()?.status === 'LIVE' ? 'Active' : 'Available after publishing' }}</span></div>
+            <p>Send this link to candidates. They will sign in before completing the interview.</p>
+            <div class="link-box"><input [value]="respondentLink()" readonly aria-label="Respondent interview link"><button type="button" (click)="copyRespondentLink()">{{ linkCopied() ? 'Copied' : 'Copy link' }}</button></div>
+          </article>
+        }
       </aside>
     </div>
     @if (message()) { <div class="toast" role="status">{{ message() }}</div> }
