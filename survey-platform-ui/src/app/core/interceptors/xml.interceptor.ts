@@ -6,7 +6,7 @@ import { HttpInterceptorFn } from '@angular/common/http';
  * browser can set its own boundary header.
  */
 export const xmlInterceptor: HttpInterceptorFn = (req, next) => {
-  if (!req.url.startsWith('/api')) {
+  if (!req.url.startsWith('/api/v1')) {
     return next(req);
   }
 

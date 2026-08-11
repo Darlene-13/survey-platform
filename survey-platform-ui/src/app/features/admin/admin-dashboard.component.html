@@ -1,0 +1,69 @@
+<div class="dashboard-shell">
+  <aside [class.open]="mobileNavOpen()">
+    <div class="aside-head">
+      <a class="brand" routerLink="/"><span>R</span>Respondly</a>
+      <button class="close" (click)="mobileNavOpen.set(false)" aria-label="Close menu">×</button>
+    </div>
+    <nav>
+      <p>Workspace</p>
+      <a class="active" href="#"><span>⌂</span> Overview</a>
+      <a href="#surveys"><span>▤</span> Interviews <b>4</b></a>
+      <a href="#responses"><span>◉</span> Candidates</a>
+      <a href="#"><span>♧</span> Certificates</a>
+      <p>Manage</p>
+      <a href="#"><span>♙</span> Team</a>
+      <a href="#"><span>⚙</span> Settings</a>
+    </nav>
+    <div class="profile">
+      <div class="avatar">DM</div><div><strong>Darlene M.</strong><small>Administrator</small></div><button>•••</button>
+    </div>
+  </aside>
+
+  <main>
+    <header>
+      <button class="menu" (click)="mobileNavOpen.set(true)" aria-label="Open menu">☰</button>
+      <div><span>Tuesday, 11 August</span><h1>Good morning, Darlene.</h1></div>
+      <div class="header-actions"><button class="icon-button" aria-label="Notifications">♢<i></i></button><button class="create">＋ Create interview</button></div>
+    </header>
+
+    <section class="stats" aria-label="Interview statistics">
+      <article><div class="stat-icon coral">●</div><div><p>Total candidates</p><h2>1,635</h2><small class="up">12.5% more</small><small> vs last month</small></div></article>
+      <article><div class="stat-icon green">✓</div><div><p>Completion rate</p><h2>84.2%</h2><small class="up">3.1% more</small><small> vs last month</small></div></article>
+      <article><div class="stat-icon lilac">◷</div><div><p>Avg. completion</p><h2>4m 18s</h2><small class="down">22 sec</small><small> faster</small></div></article>
+      <article><div class="stat-icon sand">▤</div><div><p>Open interviews</p><h2>2</h2><small>of 4 interview forms</small></div></article>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel chart-panel" id="responses">
+        <div class="panel-title"><div><h3>Response activity</h3><p>Responses collected over the last 7 days</p></div><button>Last 7 days⌄</button></div>
+        <div class="chart-wrap">
+          <div class="y-axis"><span>120</span><span>90</span><span>60</span><span>30</span><span>0</span></div>
+          <div class="chart">
+            <div class="grid-lines"><i></i><i></i><i></i><i></i><i></i></div>
+            <svg viewBox="0 0 700 220" preserveAspectRatio="none" aria-label="Response activity line chart">
+              <defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ec7357" stop-opacity=".2"/><stop offset="1" stop-color="#ec7357" stop-opacity="0"/></linearGradient></defs>
+              <path class="area" d="M0,174 C55,165 66,133 116,140 S194,180 232,151 S306,86 350,108 S423,143 466,94 S538,45 583,69 S652,75 700,20 L700,220 L0,220Z"/>
+              <path class="line" d="M0,174 C55,165 66,133 116,140 S194,180 232,151 S306,86 350,108 S423,143 466,94 S538,45 583,69 S652,75 700,20"/>
+              <circle cx="700" cy="20" r="6"/>
+            </svg>
+            <div class="x-axis"><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span><span>Mon</span><span>Tue</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel quick-panel">
+        <div class="panel-title"><div><h3>At a glance</h3><p>Today’s activity</p></div></div>
+        <div class="donut-row"><div class="donut"><span><strong>84%</strong><small>complete</small></span></div><div class="legend"><p><i class="complete"></i>Completed <b>137</b></p><p><i class="partial"></i>Partial <b>26</b></p></div></div>
+        <div class="divider"></div>
+        <div class="mini-stat"><span>Most active interview</span><strong>Frontend Engineer Interview</strong><small><i></i> 68 candidates today</small></div>
+      </article>
+    </section>
+
+    <section class="panel survey-panel" id="surveys">
+      <div class="panel-title"><div><h3>Your interviews</h3><p>Manage and monitor candidate intake forms</p></div><button>View all</button></div>
+      <div class="table-wrap"><table><thead><tr><th>Interview</th><th>Status</th><th>Candidates</th><th>Completion</th><th>Last updated</th><th></th></tr></thead>
+        <tbody>@for (survey of surveys; track survey.title) {<tr><td><span class="doc">▤</span><strong>{{ survey.title }}</strong></td><td><span class="status" [class]="survey.status.toLowerCase()"><i></i>{{ survey.status }}</span></td><td>{{ survey.responses }}</td><td><div class="completion"><span><i [style.width.%]="survey.completion"></i></span>{{ survey.completion }}%</div></td><td>{{ survey.updated }}</td><td><button class="more">•••</button></td></tr>}</tbody>
+      </table></div>
+    </section>
+  </main>
+</div>

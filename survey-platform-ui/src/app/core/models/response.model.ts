@@ -24,3 +24,8 @@ export interface ResponseQuery {
   pageSize: number;
   email?: string;
 }
+
+export interface InterviewSubmission {
+  answers: Record<string, string>;
+  files?: Record<string, File[]>;
+}

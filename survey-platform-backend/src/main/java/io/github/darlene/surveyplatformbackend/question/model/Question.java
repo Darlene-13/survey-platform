@@ -22,7 +22,7 @@ public class Question {
     @JoinColumn(name = "survey_id")
     private Survey survey;
 
-    /** Machine name, e.g. "full_name" — the key used in submissions and responses. */
+    /** Machine name, e.g. "full_name", the key used in submissions and responses. */
     @Column(nullable = false, length = 100)
     private String name;
 

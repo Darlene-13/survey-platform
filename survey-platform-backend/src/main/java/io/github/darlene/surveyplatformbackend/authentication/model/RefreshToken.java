@@ -4,15 +4,14 @@ package io.github.darlene.surveyplatformbackend.authentication.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "refresh_token")
-@RequiredArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -25,9 +24,17 @@ public class RefreshToken {
     @Column(name = "token", nullable = false)
     private String token;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+    @Column(nullable = false)
+    private Instant expiryDate;
+
+    @Column(nullable = false)
+    private boolean revoked;
 
     @CreationTimestamp
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
+    private Instant createdAt;
 }

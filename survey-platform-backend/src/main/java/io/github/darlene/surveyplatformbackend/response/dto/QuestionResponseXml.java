@@ -17,7 +17,7 @@ public class QuestionResponseXml {
     @JsonProperty("response_id")
     private final Long responseId;
 
-    /** Dynamic answers keyed by question name — serialized as sibling elements. */
+    /** Dynamic answers keyed by question name, serialized as sibling elements. */
     private final Map<String, String> answers = new LinkedHashMap<>();
 
     private final CertificatesXml certificates;

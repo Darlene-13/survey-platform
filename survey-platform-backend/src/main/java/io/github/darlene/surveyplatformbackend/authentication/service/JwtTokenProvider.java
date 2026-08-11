@@ -2,18 +2,17 @@ package io.github.darlene.surveyplatformbackend.authentication.service;
 
 
 import io.github.darlene.surveyplatformbackend.authentication.model.UserRole;
-import org.springframework.beans.factory.annotation.Value;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
-import java.util.Date;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.crypto.SecretKey;
+import java.util.Date;
 
 @Slf4j
 @Component
@@ -25,13 +24,13 @@ public class JwtTokenProvider {
     @Value("${jwt.expiration-ms}")
     private long expirationMs;
 
-    // Generate a jwt token from username and role
-    public String generateToken(String username, UserRole role){
+    // The JWT subject is the user's email address.
+    public String generateToken(String email, UserRole role){
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
-                .subject(username)
+                .subject(email)
                 .issuedAt(now)
                 .expiration(expiry)
                 .claim("role", role.name())
@@ -55,7 +54,22 @@ public class JwtTokenProvider {
         }
     }
 
+    // Extract the user's email address from the JWT subject.
+    public String getEmailFromToken(String token){
+        return extractAllClaims(token).getSubject();
+    }
 
+    public String getRoleFromToken(String token){
+        return extractAllClaims(token).get("role", String.class);
+    }
+
+    private Claims extractAllClaims(String token){
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
 
     private SecretKey getSigningKey(){
         byte[] bytes = Decoders.BASE64.decode(secret);

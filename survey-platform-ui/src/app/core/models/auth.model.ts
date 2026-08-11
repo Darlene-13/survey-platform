@@ -23,6 +23,14 @@ export interface LoginPayload {
   password: string;
 }
 
+export interface LoginResponse {
+  token: string;
+  user: User;
+  refreshToken?: string;
+  type?: string;
+  expiresIn?: string;
+}
+
 // Request payload for updating user details
 export interface UpdateUserPayload {
   firstName: string;

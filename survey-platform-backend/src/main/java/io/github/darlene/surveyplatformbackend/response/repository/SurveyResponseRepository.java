@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface SurveyResponseRepository extends JpaRepository<SurveyResponse, Long> {
 
-    // Step 1: page over IDs only — no join, so LIMIT/OFFSET work correctly.
+    // Step 1: page over IDs only. There is no join, so LIMIT/OFFSET work correctly.
     @Query("""
         SELECT r.id FROM SurveyResponse r
         WHERE r.survey.id = :surveyId

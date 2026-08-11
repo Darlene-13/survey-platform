@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     // Login and registration both need to look a user up by email rather than
-    // by id — this is the entry point before you have an id to work with.
+    // by id. This is the entry point before you have an id to work with.
     Optional<User> findByEmailIgnoreCase(String email);
 
     boolean existsByEmailIgnoreCase(String email);
