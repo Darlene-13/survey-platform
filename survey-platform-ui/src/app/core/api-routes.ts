@@ -10,6 +10,9 @@ export const apiRoutes = {
   surveys: {
     collection: `${API_ROOT}/surveys`,
     one: (surveyId: number) => `${API_ROOT}/surveys/${surveyId}`,
+    status: (surveyId: number) => `${API_ROOT}/surveys/${surveyId}/status`,
+    publish: (surveyId: number) => `${API_ROOT}/surveys/${surveyId}/publish`,
+    close: (surveyId: number) => `${API_ROOT}/surveys/${surveyId}/close`,
     questions: (surveyId: number) => `${API_ROOT}/surveys/${surveyId}/questions`,
     question: (surveyId: number, questionId: number) => `${API_ROOT}/surveys/${surveyId}/questions/${questionId}`,
     responses: (surveyId: number) => `${API_ROOT}/surveys/${surveyId}/responses`

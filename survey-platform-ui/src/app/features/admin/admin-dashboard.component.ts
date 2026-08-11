@@ -1,7 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
-interface SurveyRow { title: string; status: 'Live' | 'Draft' | 'Closed'; responses: number; completion: number; updated: string; }
+import { Survey } from '../../core/models/survey.model';
+import { AuthService } from '../../core/services/auth.service';
+import { SurveyService } from '../../core/services/survey.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -9,12 +10,21 @@ interface SurveyRow { title: string; status: 'Live' | 'Draft' | 'Closed'; respon
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.scss'
 })
-export class AdminDashboardComponent {
+export class AdminDashboardComponent implements OnInit {
+  private readonly surveyService = inject(SurveyService);
+  private readonly auth = inject(AuthService);
   protected readonly mobileNavOpen = signal(false);
-  protected readonly surveys: SurveyRow[] = [
-    { title: 'Frontend Engineer Interview', status: 'Live', responses: 486, completion: 82, updated: '12 min ago' },
-    { title: 'Graduate Developer Intake', status: 'Live', responses: 231, completion: 74, updated: '1 hour ago' },
-    { title: 'Product Designer Interview', status: 'Draft', responses: 0, completion: 0, updated: 'Yesterday' },
-    { title: 'Backend Engineer Intake', status: 'Closed', responses: 918, completion: 91, updated: 'Aug 02' }
-  ];
+  protected readonly surveys = signal<Survey[]>([]);
+  protected readonly loading = signal(true);
+  protected readonly message = signal('');
+  protected readonly user = this.auth.user();
+
+  ngOnInit(): void {
+    this.surveyService.list().subscribe({
+      next: surveys => { this.surveys.set(surveys); this.loading.set(false); },
+      error: () => { this.loading.set(false); this.message.set('Interviews could not be loaded.'); }
+    });
+  }
+
+  protected statusClass(status: Survey['status']): string { return status.toLowerCase(); }
 }

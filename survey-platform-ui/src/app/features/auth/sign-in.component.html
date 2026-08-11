@@ -7,6 +7,7 @@
     <label>Password<input name="password" type="password" autocomplete="current-password" [(ngModel)]="password" required minlength="8"></label>
     @if (message) { <p class="error" role="alert">{{ message }}</p> }
     <button type="submit" [disabled]="submitting">{{ submitting ? 'Signing in…' : 'Sign in' }}</button>
+    @if (expectedRole === 'RESPONDENT') { <a [routerLink]="['/register/respondent']" [queryParams]="{ returnUrl: returnUrl }">Create respondent account</a> }
     <a routerLink="/">Return home</a>
   </form>
 </main>

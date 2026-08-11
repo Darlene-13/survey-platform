@@ -1,0 +1,13 @@
+<main class="auth-page">
+  <section class="welcome"><a [routerLink]="adminRegistration ? '/admin/dashboard' : '/'" class="brand"><span>R</span>Respondly</a><div><p>{{ adminRegistration ? 'Admin workspace' : 'Candidate portal' }}</p><h1>{{ adminRegistration ? 'Register a respondent.' : 'Your next conversation starts here.' }}</h1><span>{{ adminRegistration ? 'Create login details for a candidate without leaving your administrator session.' : 'Create one account to securely complete interviews and upload requested documents.' }}</span></div><small>Your details are only shared with the team running the interview.</small></section>
+  <form class="auth-card" (ngSubmit)="submit()">
+    <p class="eyebrow">Create an account</p><h2>Respondent registration</h2>@if (!adminRegistration) { <p class="intro">Already registered? <a [routerLink]="['/signin/respondent']" [queryParams]="{ returnUrl: returnUrl }">Sign in</a></p> }
+    <div class="names"><label>First name<input name="firstName" [(ngModel)]="firstName" autocomplete="given-name" required></label><label>Last name<input name="lastName" [(ngModel)]="lastName" autocomplete="family-name" required></label></div>
+    <label>Email address<input name="email" type="email" [(ngModel)]="email" autocomplete="email" required></label>
+    <label>Password<input name="password" type="password" [(ngModel)]="password" autocomplete="new-password" minlength="8" required><small>Use at least 8 characters.</small></label>
+    <label>Confirm password<input name="confirmPassword" type="password" [(ngModel)]="confirmPassword" autocomplete="new-password" required></label>
+    @if (message) { <p class="error" role="alert">{{ message }}</p> }
+    <button type="submit" [disabled]="submitting">{{ submitting ? 'Creating account...' : 'Create account' }}</button>
+    <small class="terms">By creating an account, you agree to use Respondly for its intended interview process.</small>
+  </form>
+</main>

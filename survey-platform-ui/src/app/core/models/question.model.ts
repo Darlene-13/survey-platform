@@ -19,6 +19,7 @@ export interface Question {
   required: boolean;
   text: string;
   description: string;
+  sortOrder?: number;
   multiple?: boolean; // only for 'choice'
   options?: QuestionOption[]; // only for 'choice'
   fileProperties?: FileProperties; // only for 'file'

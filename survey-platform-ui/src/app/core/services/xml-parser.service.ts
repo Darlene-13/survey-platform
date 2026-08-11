@@ -20,7 +20,7 @@ export class XmlParserService {
     const attributes = Object.fromEntries(
       Array.from(element.attributes).map(attribute => [this.camelCase(attribute.name), attribute.value])
     );
-    if (!children.length) return Object.keys(attributes).length ? { ...attributes, value: element.textContent?.trim() ?? '' } : element.textContent?.trim() ?? '';
+    if (!children.length) return Object.keys(attributes).length ? { ...attributes, text: element.textContent?.trim() ?? '' } : element.textContent?.trim() ?? '';
 
     const result: Record<string, unknown> = { ...attributes };
     for (const child of children) {

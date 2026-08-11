@@ -1,63 +1,81 @@
 <main class="respondent-page">
   <nav><a class="brand" routerLink="/"><span>R</span>Respondly</a><small>Secure & private</small></nav>
 
-  @if (!submitted()) {
+  @if (loading()) {
+    <section class="state-card"><div class="loader"></div><h1>Preparing your interview</h1><p>Loading the questions securely.</p></section>
+  } @else if (!survey() || survey()?.status !== 'LIVE' || !questions().length) {
+    <section class="state-card"><div class="state-icon">i</div><h1>Interview unavailable</h1><p>{{ message() }}</p><a routerLink="/">Return home</a></section>
+  } @else if (!submitted()) {
     <section class="survey-layout">
       <aside>
-        <div class="survey-tag">Candidate interview · 2026</div>
-        <h1>Frontend Engineer Interview</h1>
-        <p>Tell us about your experience, working style, and the skills you would bring to our engineering team.</p>
-        <div class="meta"><span>◷</span><div><small>Time to complete</small><strong>About 4 minutes</strong></div></div>
+        <div class="survey-tag">Candidate interview</div>
+        <h1>{{ survey()?.name }}</h1>
+        <p>{{ survey()?.description }}</p>
+        <div class="meta"><span>◷</span><div><small>Questions</small><strong>{{ questions().length }} thoughtful prompts</strong></div></div>
         <div class="meta"><span>◇</span><div><small>Your privacy</small><strong>Answers are confidential</strong></div></div>
-        <blockquote>We care about how you think, learn, and collaborate, not just the tools on your CV.</blockquote>
+        <blockquote>Take your time. We care about how you think, learn, and collaborate.</blockquote>
       </aside>
 
       <section class="form-card">
-        <div class="progress-head"><span>Question {{ step() }} of 5</span><strong>{{ progress() }}% complete</strong></div>
+        <div class="progress-head"><span>Question {{ step() }} of {{ questions().length }}</span><strong>{{ progress() }}% complete</strong></div>
         <div class="progress"><i [style.width.%]="progress()"></i></div>
 
-        <div class="question-area">
-          @switch (step()) {
-            @case (1) {
-              <span class="question-number">01</span><h2>Let’s start with your name.</h2><p>What should we call you?</p>
-              <label for="name">Full name</label><input id="name" [(ngModel)]="name" placeholder="e.g. Amina Kamau" autocomplete="name" autofocus>
-            }
-            @case (2) {
-              <span class="question-number">02</span><h2>Where can we reach you?</h2><p>We’ll use this email to identify your interview response.</p>
-              <label for="email">Email address</label><input id="email" type="email" [(ngModel)]="email" placeholder="you@example.com" autocomplete="email">
-            }
-            @case (3) {
-              <span class="question-number">03</span><h2>How long have you been building?</h2><p>Choose the answer that fits you best.</p>
-              <div class="choices single">
-                @for (option of ['Just getting started', '1-2 years', '3-5 years', '6-10 years', 'More than 10 years']; track option; let i = $index) {
-                  <button [class.selected]="experience === option" (click)="experience = option"><b>{{ ['A','B','C','D','E'][i] }}</b>{{ option }}<i>{{ experience === option ? '✓' : '' }}</i></button>
-                }
-              </div>
-            }
-            @case (4) {
-              <span class="question-number">04</span><h2>What do you build with?</h2><p>Select all the technologies you use regularly.</p>
-              <div class="choices grid">
-                @for (tool of ['Java / Spring', 'Angular', 'JavaScript', 'Python', 'React', 'Other']; track tool) {
-                  <button [class.selected]="tools.has(tool)" (click)="toggleTool(tool)"><b>{{ tools.has(tool) ? '✓' : '+' }}</b>{{ tool }}</button>
-                }
-              </div>
-            }
-            @case (5) {
-              <span class="question-number">05</span><h2>What would help you grow?</h2><p>Share one thing you’d love this community to offer.</p>
-              <label for="feedback">Your answer</label><textarea id="feedback" [(ngModel)]="feedback" rows="6" placeholder="More hands-on workshops, mentorship opportunities..."></textarea>
-              <small class="optional">Optional · Be as brief or detailed as you like</small>
-            }
-          }
-        </div>
+        @if (currentQuestion(); as question) {
+          <div class="question-area">
+            <span class="question-number">{{ step().toString().padStart(2, '0') }}</span>
+            <h2>{{ question.text }}</h2>
+            <p>{{ question.description }}</p>
 
-        <footer><button class="back" (click)="previous()" [disabled]="step() === 1">Back</button><button class="next" (click)="next()">{{ step() === 5 ? 'Submit response' : 'Continue' }}</button></footer>
+            @switch (question.type) {
+              @case ('short_text') {
+                <label [for]="question.name">Your answer</label>
+                <input [id]="question.name" [ngModel]="answer(question)" (ngModelChange)="setAnswer(question, $event)" placeholder="Type your answer" [required]="question.required">
+              }
+              @case ('email') {
+                <label [for]="question.name">Email address</label>
+                <input [id]="question.name" type="email" [ngModel]="answer(question)" (ngModelChange)="setAnswer(question, $event)" placeholder="you@example.com" autocomplete="email" [required]="question.required">
+              }
+              @case ('long_text') {
+                <label [for]="question.name">Your answer</label>
+                <textarea [id]="question.name" [ngModel]="answer(question)" (ngModelChange)="setAnswer(question, $event)" rows="6" placeholder="Share your thoughts here" [required]="question.required"></textarea>
+              }
+              @case ('choice') {
+                <div class="choices" [class.grid]="question.options && question.options.length > 5">
+                  @for (option of question.options ?? []; track option.value; let i = $index) {
+                    <button type="button" [class.selected]="selected(question, option.value)" (click)="choose(question, option.value)">
+                      <b>{{ selected(question, option.value) ? '✓' : (i + 1) }}</b>{{ option.label }}
+                    </button>
+                  }
+                </div>
+                @if (question.multiple) { <small class="optional">Select all that apply</small> }
+              }
+              @case ('file') {
+                <label class="file-drop" [for]="question.name">
+                  <span>＋</span><strong>Choose {{ question.fileProperties?.format ?? 'a' }} file</strong>
+                  <small>Maximum {{ question.fileProperties?.maxFileSize }}{{ question.fileProperties?.maxFileSizeUnit }}</small>
+                </label>
+                <input class="file-input" [id]="question.name" type="file" [accept]="question.fileProperties?.format" [multiple]="question.fileProperties?.multiple" (change)="selectFiles(question, $event)">
+                @if (files()[question.name]?.length) {
+                  <div class="selected-files">{{ files()[question.name].length }} file{{ files()[question.name].length === 1 ? '' : 's' }} selected</div>
+                }
+              }
+            }
+            @if (!question.required) { <small class="optional">Optional</small> }
+            @if (message()) { <div class="form-message" role="alert">{{ message() }}</div> }
+          </div>
+        }
+
+        <footer>
+          <button class="back" type="button" (click)="previous()" [disabled]="step() === 1">Back</button>
+          <button class="next" type="button" (click)="next()" [disabled]="submitting()">{{ submitting() ? 'Submitting...' : step() === questions().length ? 'Submit response' : 'Continue' }}</button>
+        </footer>
       </section>
     </section>
   } @else {
     <section class="success">
-      <div class="success-icon">✓</div><span>Response received</span><h1>Thank you{{ name ? ', ' + name.split(' ')[0] : '' }}.</h1>
-      <p>Your perspective is now part of something bigger. We appreciate the time you took to share it.</p>
-      <div class="receipt"><div><small>Interview</small><strong>Frontend Engineer Interview</strong></div><div><small>Status</small><strong><i></i> Successfully submitted</strong></div></div>
+      <div class="success-icon">✓</div><span>Response received</span><h1>Thank you{{ firstName() ? ', ' + firstName() : '' }}.</h1>
+      <p>Your interview response has been submitted securely. The hiring team can now review your answers and supporting documents.</p>
+      <div class="receipt"><div><small>Interview</small><strong>{{ survey()?.name }}</strong></div><div><small>Status</small><strong><i></i> Successfully submitted</strong></div></div>
       <a routerLink="/">Return home</a>
     </section>
   }

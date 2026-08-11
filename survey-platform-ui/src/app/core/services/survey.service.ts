@@ -19,11 +19,20 @@ export class SurveyService {
   create(payload: SurveyPayload): Observable<Survey> { return this.send('post', apiRoutes.surveys.collection, payload); }
   update(surveyId: number, payload: SurveyPayload): Observable<Survey> { return this.send('put', apiRoutes.surveys.one(surveyId), payload); }
   delete(surveyId: number): Observable<void> { return this.http.delete<void>(apiRoutes.surveys.one(surveyId)); }
+  changeStatus(surveyId: number, status: Survey['status']): Observable<Survey> {
+    return this.http.patch(apiRoutes.surveys.status(surveyId), `<survey_status><status>${status}</status></survey_status>`, { responseType: 'text' })
+      .pipe(map(xml => this.xml.parse<Survey>(xml)));
+  }
+  publish(surveyId: number): Observable<Survey> { return this.statusAction(apiRoutes.surveys.publish(surveyId)); }
+  close(surveyId: number): Observable<Survey> { return this.statusAction(apiRoutes.surveys.close(surveyId)); }
 
   private request<T>(url: string): Observable<T> { return this.http.get(url, { responseType: 'text' }).pipe(map(xml => this.xml.parse<T>(xml))); }
   private send(method: 'post' | 'put', url: string, payload: SurveyPayload): Observable<Survey> {
     const body = `<survey><name>${this.xml.escape(payload.name)}</name><description>${this.xml.escape(payload.description)}</description></survey>`;
     return this.http[method](url, body, { responseType: 'text' }).pipe(map(xml => this.xml.parse<Survey>(xml)));
+  }
+  private statusAction(url: string): Observable<Survey> {
+    return this.http.post(url, null, { responseType: 'text' }).pipe(map(xml => this.xml.parse<Survey>(xml)));
   }
   private array<T>(value?: T | T[]): T[] { return value === undefined ? [] : Array.isArray(value) ? value : [value]; }
 }

@@ -18,6 +18,7 @@ export class SignInComponent {
   protected submitting = false;
   protected message = '';
   protected readonly expectedRole = this.route.snapshot.data['role'] as 'ADMIN' | 'RESPONDENT';
+  protected readonly returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
 
   protected submit(): void {
     this.submitting = true;
@@ -30,7 +31,8 @@ export class SignInComponent {
           this.message = `This account is not a ${this.expectedRole.toLowerCase()} account.`;
           return;
         }
-        void this.router.navigateByUrl(this.expectedRole === 'ADMIN' ? '/admin/dashboard' : '/interviews/1');
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+        void this.router.navigateByUrl(returnUrl ?? (this.expectedRole === 'ADMIN' ? '/admin/dashboard' : '/'));
       },
       error: () => {
         this.submitting = false;

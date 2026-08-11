@@ -39,7 +39,7 @@ export class ResponseService {
     for (const [questionName, files] of Object.entries(submission.files ?? {})) {
       for (const file of files) body.append(questionName, file, file.name);
     }
-    return this.http.post<void>(apiRoutes.surveys.responses(surveyId), body);
+    return this.http.post(apiRoutes.surveys.responses(surveyId), body, { responseType: 'text' }).pipe(map(() => undefined));
   }
 
   private answersXml(answers: Record<string, string>): string {

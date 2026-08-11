@@ -1,0 +1,43 @@
+<main class="builder-page">
+  <header><a routerLink="/admin/dashboard" class="brand"><span>R</span>Respondly</a><div><small>Interview builder</small><strong>{{ interview()?.status ?? 'DRAFT' }}</strong></div></header>
+
+  <section class="builder-shell">
+    <div class="heading"><div><p>Admin workspace</p><h1>{{ interview() ? 'Edit interview' : 'Create an interview' }}</h1><span>Build the form candidates will complete before their interview.</span></div>
+      @if (interview()?.status === 'LIVE') { <a class="preview" [routerLink]="['/interviews', interview()?.id]">Open respondent form</a> }
+    </div>
+
+    <div class="layout">
+      <section class="main-column">
+        <article class="card">
+          <div class="card-title"><b>1</b><div><h2>Interview details</h2><p>Name the role and explain what candidates should expect.</p></div></div>
+          <label>Interview name<input [(ngModel)]="name" placeholder="e.g. Frontend Engineer Interview"></label>
+          <label>Description<textarea [(ngModel)]="description" rows="4" placeholder="Tell candidates about this interview form"></textarea></label>
+          <button class="primary" (click)="saveInterview()" [disabled]="saving()">{{ interview() ? 'Save changes' : 'Save draft' }}</button>
+        </article>
+
+        <article class="card" [class.locked]="!interview()">
+          <div class="card-title"><b>2</b><div><h2>Add questions</h2><p>Questions appear in the order you add them.</p></div></div>
+          <div class="two-fields"><label>Question type<select [(ngModel)]="questionType"><option value="short_text">Short text</option><option value="long_text">Long text</option><option value="email">Email</option><option value="choice">Choice</option><option value="file">Certificate upload</option></select></label><label>Machine name<input [(ngModel)]="questionName" placeholder="e.g. full_name"></label></div>
+          <label>Question<input [(ngModel)]="questionText" placeholder="What would you like to ask?"></label>
+          <label>Supporting text<input [(ngModel)]="questionDescription" placeholder="Optional guidance for the candidate"></label>
+          @if (questionType === 'choice') { <label>Options <small>One option per line</small><textarea [(ngModel)]="optionsText" rows="4" placeholder="Junior&#10;Mid-level&#10;Senior"></textarea></label> }
+          @if (questionType === 'file') { <div class="two-fields"><label>Allowed extension<input [(ngModel)]="fileFormat" placeholder=".pdf"></label><label>Maximum size in MB<input type="number" min="1" [(ngModel)]="maxFileSize"></label></div> }
+          <div class="checks"><label><input type="checkbox" [(ngModel)]="required"> Required</label>@if (questionType === 'choice' || questionType === 'file') { <label><input type="checkbox" [(ngModel)]="multiple"> Allow multiple</label> }</div>
+          <button class="secondary" (click)="addQuestion()" [disabled]="!interview() || saving()">Add question</button>
+        </article>
+      </section>
+
+      <aside>
+        <article class="card question-list"><div class="card-title"><b>3</b><div><h2>Questions</h2><p>{{ questions().length }} added</p></div></div>
+          @if (!questions().length) { <div class="empty"><span>?</span><strong>No questions yet</strong><p>Save the draft, then add your first question.</p></div> }
+          @for (question of questions(); track question.id) { <div class="question"><span>{{ $index + 1 }}</span><div><strong>{{ question.text }}</strong><small>{{ question.type.replace('_', ' ') }} · {{ question.required ? 'Required' : 'Optional' }}</small></div><button (click)="deleteQuestion(question)" aria-label="Delete question">×</button></div> }
+        </article>
+        <article class="publish-card"><h2>Ready to share?</h2><p>Publishing opens the interview to respondents. You need at least one question.</p>
+          @if (interview()?.status !== 'LIVE') { <button (click)="publish()" [disabled]="!questions().length || saving()">Publish interview</button> }
+          @else { <a [routerLink]="['/interviews', interview()?.id]">Open interview</a><button class="close-interview" (click)="close()">Close interview</button> }
+        </article>
+      </aside>
+    </div>
+    @if (message()) { <div class="toast" role="status">{{ message() }}</div> }
+  </section>
+</main>
